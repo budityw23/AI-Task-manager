@@ -16,6 +16,20 @@ services:
       - postgres
     command: npm start
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend/Dockerfile
+    ports:
+      - "5173:80"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+
   postgres:
     image: postgres:15-alpine
     ports:

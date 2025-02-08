@@ -168,3 +168,57 @@ Common PostgreSQL commands:
 5. Regularly backup production database
 
 ```
+## Frontend Environment Setup
+
+### Development Mode
+Update the frontend service in docker-compose.yml:
+```yaml
+frontend:
+  build:
+    context: ./frontend
+    dockerfile: ../docker/frontend/Dockerfile
+    target: development  # Specify development stage
+  ports:
+    - "5173:5173"
+  volumes:
+    - ./frontend:/usr/src/app
+    - /usr/src/app/node_modules
+  environment:
+    - NODE_ENV=development
+  command: npm run dev
+```
+
+### Production Mode
+Update the frontend service in docker-compose.yml:
+```yaml
+frontend:
+  build:
+    context: ./frontend
+    dockerfile: ../docker/frontend/Dockerfile
+    target: production  # Specify production stage
+  ports:
+    - "80:80"
+  environment:
+    - NODE_ENV=production
+```
+
+### Running Different Environments
+
+1. Development:
+```bash
+# Ensure frontend service in docker-compose.yml is set to development target
+docker-compose up --build
+```
+
+2. Production:
+```bash
+# Ensure frontend service in docker-compose.yml is set to production target
+docker-compose up --build
+```
+
+### Important Notes for Frontend
+- Development mode runs on port 5173 with hot-reloading enabled
+- Production mode runs on port 80 using NGINX to serve static files
+- Changes between modes require updating the `target` in docker-compose.yml and rebuilding
+- Always rebuild when switching environments: `docker-compose up --build`
+```
