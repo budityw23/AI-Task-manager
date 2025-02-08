@@ -4,10 +4,14 @@
     "description": "Task Management Application Backend",
     "main": "index.js",
     "scripts": {
-      "start": "node index.js",
-      "build": "echo \"No build step configured\""
+        "start": "node index.js",
+        "dev": "NODE_ENV=development node index.js",
+        "test": "NODE_ENV=test node index.js",
+        "prod": "NODE_ENV=production node index.js",
+        "build": "echo \"No build step configured\""
     },
     "dependencies": {
-      "express": "^4.18.2"
+      "express": "^4.18.2",
+      "dotenv": "^16.0.3"
     }
   }
