@@ -12,6 +12,9 @@ services:
       - /usr/src/app/node_modules
     env_file:
       - ./backend/.env.development
+    networks:
+      - backend-network
+      - database-network
     depends_on:
       - postgres
     command: npm start
@@ -27,6 +30,9 @@ services:
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
+    networks:
+      - frontend-network
+      - backend-network
     depends_on:
       - backend
 
@@ -41,6 +47,21 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=taskmanagement
+    networks:
+      - database-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  frontend-network:
+    driver: bridge
+  backend-network:
+    driver: bridge
+  database-network:
+    driver: bridge
 
 volumes:
   postgres_data:

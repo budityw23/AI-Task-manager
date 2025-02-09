@@ -1,3 +1,4 @@
+
 ```markdown
 # Task Management Application Backend
 
@@ -221,4 +222,80 @@ docker-compose up --build
 - Production mode runs on port 80 using NGINX to serve static files
 - Changes between modes require updating the `target` in docker-compose.yml and rebuilding
 - Always rebuild when switching environments: `docker-compose up --build`
+```
+
+
+## Network Configuration and Health Checks
+```
+### Network Structure
+The application uses three isolated networks:
+- `frontend-network`: Frontend to Backend communication
+- `backend-network`: Backend service communications
+- `database-network`: Database access
+
+### Check Network Status
+```bash
+# List all networks
+docker network ls
+
+# Inspect specific networks
+docker network inspect ai-task-manager_frontend-network
+docker network inspect ai-task-manager_backend-network
+docker network inspect ai-task-manager_database-network
+
+# Check container network connectivity
+docker exec -it ai-task-manager-backend-1 ping postgres
+docker exec -it ai-task-manager-frontend-1 ping backend
+```
+
+### Health Checks
+
+#### Database Health Check
+PostgreSQL container includes a health check that verifies database availability:
+```bash
+# Check PostgreSQL container health status
+docker inspect --format='{{json .State.Health}}' ai-task-manager-postgres-1
+
+# View PostgreSQL container logs
+docker logs ai-task-manager-postgres-1
+
+# Manual health check
+docker exec -it ai-task-manager-postgres-1 pg_isready -U postgres
+```
+
+### Network Troubleshooting
+
+If services can't communicate:
+
+1. Verify networks are created:
+```bash
+docker network ls | grep ai-task-manager
+```
+
+2. Check container network attachment:
+```bash
+# List networks for each container
+docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{printf "%s\n" $k}}{{end}}' ai-task-manager-backend-1
+docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{printf "%s\n" $k}}{{end}}' ai-task-manager-frontend-1
+docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{printf "%s\n" $k}}{{end}}' ai-task-manager-postgres-1
+```
+
+3. Reset networking (if issues persist):
+```bash
+# Remove all containers and networks
+docker-compose down
+
+# Remove all networks
+docker network prune
+
+# Rebuild and start
+docker-compose up --build
+```
+
+### Important Network Security Notes
+1. Frontend can only communicate with backend
+2. Only backend can access database
+3. Database is isolated from frontend
+4. Internal ports are not exposed unless necessary
+5. Use secure passwords for database in production
 ```
