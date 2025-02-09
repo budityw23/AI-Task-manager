@@ -7,7 +7,7 @@ export default mergeConfig(
   defineConfig({
     mode: 'development',
     server: {
-      host: true,
+      host: '0.0.0.0',
       port: 5173,
       watch: {
         usePolling: true
