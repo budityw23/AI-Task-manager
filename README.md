@@ -11,7 +11,7 @@ backend/
 ├── .env.development      # Development environment variables
 ├── .env.test            # Test environment variables
 ├── .env.production      # Production environment variables
-├── index.js             # Main application file
+├── index.ts             # Main application file
 └── package.json         # Project dependencies and scripts
 ```
 
