@@ -1,5 +1,3 @@
-
-```markdown
 # Task Management Application Backend
 
 A Node.js backend service for the Task Management Application with AI prioritization.
@@ -7,12 +5,33 @@ A Node.js backend service for the Task Management Application with AI prioritiza
 ## Project Structure
 ```bash
 backend/
-├── .env.example           # Example environment variables template
-├── .env.development      # Development environment variables
-├── .env.test            # Test environment variables
-├── .env.production      # Production environment variables
-├── index.ts             # Main application file
-└── package.json         # Project dependencies and scripts
+├── dist/               # Compiled TypeScript output
+├── prisma/            # Prisma ORM configurations
+│   └── schema.prisma  # Database schema definition
+├── scripts/           # Database scripts
+├── src/               # Source code
+│   ├── database/      # Database related code
+│   │   ├── prisma.ts  # Prisma client configuration
+│   │   └── transaction.ts # Database transactions
+│   └── index.ts       # Main application entry point
+├── .env.example       # Example environment variables template
+├── .env.development   # Development environment variables
+├── .env.test          # Test environment variables
+├── .env.production    # Production environment variables
+├── tsconfig.json      # TypeScript configuration
+└── package.json       # Project dependencies and scripts
+
+frontend/
+├── src/              # Source code
+├── public/           # Static files
+├── vite.config.ts    # Vite configuration
+└── package.json      # Project dependencies and scripts
+
+docker/
+├── backend/          # Backend Docker configurations
+│   └── Dockerfile    # Backend container definition
+└── frontend/         # Frontend Docker configurations
+    └── Dockerfile    # Frontend container definition
 ```
 
 ## Environment Setup
@@ -115,7 +134,9 @@ docker-compose down
 docker-compose down -v && NODE_ENV=production docker-compose up --build
 ```
 
-## Database Access
+## Database Operations
+
+### Database Access
 
 Connect to PostgreSQL database:
 
@@ -128,6 +149,28 @@ docker exec -it ai-task-manager-postgres-1 psql -U postgres -d taskmanagement_te
 
 # Connect to production database
 docker exec -it ai-task-manager-postgres-1 psql -U postgres -d taskmanagement_prod
+```
+
+### Database Testing
+
+To work with the test database:
+
+1. Apply migrations to test database:
+```bash
+# Run inside the backend container
+docker-compose exec backend sh -c "NODE_ENV=test npx prisma migrate deploy"
+```
+
+2. Test database connection:
+```bash
+# Test the database connection and basic operations
+curl -X GET http://localhost:3000/api/test/test-db
+```
+
+3. Verify test database setup:
+```bash
+# Connect to test database and verify tables
+docker exec -it ai-task-manager-postgres_test-1 psql -U postgres -d taskmanagement_test -c "\dt"
 ```
 
 Common PostgreSQL commands:
@@ -168,7 +211,6 @@ Common PostgreSQL commands:
 4. Use proper CORS configuration in production
 5. Regularly backup production database
 
-```
 ## Frontend Environment Setup
 
 ### Development Mode
@@ -222,11 +264,9 @@ docker-compose up --build
 - Production mode runs on port 80 using NGINX to serve static files
 - Changes between modes require updating the `target` in docker-compose.yml and rebuilding
 - Always rebuild when switching environments: `docker-compose up --build`
-```
-
 
 ## Network Configuration and Health Checks
-```
+
 ### Network Structure
 The application uses three isolated networks:
 - `frontend-network`: Frontend to Backend communication
@@ -298,4 +338,3 @@ docker-compose up --build
 3. Database is isolated from frontend
 4. Internal ports are not exposed unless necessary
 5. Use secure passwords for database in production
-```

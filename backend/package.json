@@ -11,7 +11,8 @@
         "test": "NODE_ENV=test node dist/index.js",
         "prod": "NODE_ENV=production node dist/index.js",
         "generate": "prisma generate",
-        "migrate": "prisma migrate dev"
+        "migrate": "prisma migrate dev",
+        "backup": "docker-compose exec postgres /usr/src/app/scripts/backup.sh"
     },
     "dependencies": {
         "@prisma/client": "^5.15.0",

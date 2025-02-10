@@ -43,10 +43,28 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts:/scripts
+      - ./backend/backups:/backups
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=taskmanagement
+    networks:
+      - database-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  postgres_test:
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"  # Different port for test database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=taskmanagement_test
     networks:
       - database-network
     healthcheck:
@@ -65,3 +83,4 @@ networks:
 
 volumes:
   postgres_data:
+  backups_data:
