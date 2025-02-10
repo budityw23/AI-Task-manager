@@ -153,24 +153,39 @@ docker exec -it ai-task-manager-postgres-1 psql -U postgres -d taskmanagement_pr
 
 ### Database Testing
 
-To work with the test database:
+To test various database operations and connections:
 
-1. Apply migrations to test database:
+1. Test user creation:
 ```bash
-# Run inside the backend container
-docker-compose exec backend sh -c "NODE_ENV=test npx prisma migrate deploy"
+# Create a test user
+curl -X POST http://localhost:3000/api/test/users
+
+# List all users
+curl http://localhost:3000/api/test/users
 ```
 
-2. Test database connection:
+2. Test connection pool:
+```bash
+# Test database connection pool performance
+curl http://localhost:3000/api/test/connection-pool
+```
+
+3. Test transactions:
+```bash
+# Test database transactions with user and tasks creation
+curl -X POST http://localhost:3000/api/test/transaction
+```
+
+4. Test database connection:
 ```bash
 # Test the database connection and basic operations
-curl -X GET http://localhost:3000/api/test/test-db
+curl http://localhost:3000/api/test/test-db
 ```
 
-3. Verify test database setup:
+5. Verify database setup:
 ```bash
-# Connect to test database and verify tables
-docker exec -it ai-task-manager-postgres_test-1 psql -U postgres -d taskmanagement_test -c "\dt"
+# Connect to database and verify tables
+docker exec -it ai-task-manager-postgres-1 psql -U postgres -d taskmanagement -c "\dt"
 ```
 
 Common PostgreSQL commands:
